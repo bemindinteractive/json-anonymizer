@@ -1,10 +1,10 @@
 /**
  * Anonymizes the provided JSON Object or JSON string keeping the given exceptions
- * @param  {*}             src            JSON Array|Object|string to anonymize
- * @param  {Object}        options        Anonymization options
- * @param  {Array<string>} exclusions     Values to keep as they are by the given keys
- * @param  {boolean}       keepStringBits If enabled keeps the stringified boolean values
- * @return {*}                            Anonymized JSON Array|Object|string
+ * @param  {*}             src                    JSON Array|Object|string to anonymize
+ * @param  {Object}        options                Anonymization options
+ * @param  {Array<string>} options.exclusions     Values to keep as they are by the given keys
+ * @param  {boolean}       options.keepStringBits If enabled keeps the stringified boolean values
+ * @return {*}                                    Anonymized JSON Array|Object|string
  */
 var anonymizeJSON = function(src, options) {
 
