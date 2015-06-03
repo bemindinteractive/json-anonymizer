@@ -1,48 +1,47 @@
 /**
- * Anonymizes the provided JSON string keeping the given exceptions
- * @param  {string} jStr - Source JSON string
- * @return {string}        Anonymized JSON string
- * @author Lorenzo De Santis <lorenzo@bemind.me>
+ * Anonymizes the provided JSON Object or JSON string keeping the given exceptions
+ * @param  {*}             src            JSON Array|Object|string to anonymize
+ * @param  {Object}        options        Anonymization options
+ * @param  {Array<string>} exclusions     Values to keep as they are by the given keys
+ * @param  {boolean}       keepStringBits If enabled keeps the stringified boolean values
+ * @return {*}                            Anonymized JSON Array|Object|string
  */
-var anonymize = function(jStr, keywords) {
-    var res = jStr;
+var anonymizeJSON = function(src, options) {
 
-    keywords = keywords || [];
+    var dest = typeof src === 'object' ? JSON.parse(JSON.stringify(src)) : JSON.parse(src);
 
-    //pure values
-    var natives = [
-        "true",
-        "false",
-        "null",
-        "undefined",
-        "NaN"
-    ];
+    options = !!options ? options : {};
+    options.exclusions = !!options.exclusions ? options.exclusions : [];
+    options.keepStringBits = !!options.keepStringBits ? options.keepStringBits : false;
 
-    //properties and stringified boolean values
-    for (var i = keywords.length - 1; i >= 0; i--) {
-        res = res.replace(new RegExp('\"' + keywords[i] + '\"', 'g'), '"§' + i + '§"');
-    }
+    var anonymizeWorker = function(obj, options) {
+        for (var prop in obj) {
+            if (typeof obj[prop] === 'object') {
+                anonymizeWorker(obj[prop], options); // <- recursive call
+            } else {
+                if (options.exclusions.indexOf(prop) === -1) {
+                    if (typeof obj[prop] === 'number') {
+                        obj[prop] = Number(obj[prop].toString().replace(/([\d])/g, '1'));
+                    } else if (typeof obj[prop] === 'string') {
 
-    //pure nullable and boolean values
-    for (var j = natives.length - 1; j >= 0; j--) {
-        res = res.replace(new RegExp('\:' + natives[j], 'g'), '"§' + (j + keywords.length) + '§"');
-    }
+                        var canModify = true;
 
-    //alphabetic values
-    res = res.replace(/([a-zA-Z])/g, "X");
+                        if (options.keepStringBits) {
+                            canModify = obj[prop] !== 'true' && obj[prop] !== 'false';
+                        }
 
-    //revert nullable and boolean values
-    for (j = natives.length - 1; j >= 0; j--) {
-        res = res.replace(new RegExp('\"§' + (j + keywords.length) + '§\"', 'g'), ':' + natives[j]);
-    }
+                        if (canModify) {
+                            obj[prop] = obj[prop].replace(/([a-zA-Z])/g, 'X');
+                            obj[prop] = obj[prop].replace(/([\d])/g, '1');
+                        }
 
-    //revert properties and stringified boolean values
-    for (i = keywords.length - 1; i >= 0; i--) {
-        res = res.replace(new RegExp('\"§' + i + '§\"', 'g'), '"' + keywords[i] + '"');
-    }
+                    }
+                }
+            }
+        }
+    };
 
-    //numeric values
-    res = res.replace(/([\d])/g, "1");
+    anonymizeWorker(dest, options);
 
-    return res;
+    return dest;
 };
