@@ -45,3 +45,10 @@ var anonymizeJSON = function(src, options) {
 
     return dest;
 };
+
+var anonymizeContacts = function(src) {
+    return anonymizeJSON(src, {
+        keepStringBits: true,
+        exclusions: ['id']
+    });
+};
