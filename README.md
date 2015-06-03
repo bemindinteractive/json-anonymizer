@@ -6,9 +6,9 @@ Eg. Cordova addressbook data.
 
 # How it works
 
-Parses a "stringified" JSON string keeping the given properties or keywords, trsnsforming all the digits into "1", and the letters into "X", keeping spaces, escape characters,special characters, nullable and boolean values.
+Parses a JSON Object or string keeping it properties, trsnsforming all the values digits into "1", and the values letters into "X", keeping spaces, escape characters,special characters, nullable and boolean values.
 
-Eg. Source (expanded for better reading) JSON string:
+Eg. Source JSON string:
 
 ```json
 [{
@@ -41,7 +41,7 @@ Eg. Source (expanded for better reading) JSON string:
 }]
 ```
 
-Dest. (expanded for better reading) JSON string:
+Dest. JSON string:
 
 ```json
 [{
